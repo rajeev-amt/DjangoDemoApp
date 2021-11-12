@@ -1,0 +1,86 @@
+<html>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(() => {
+            $("#submit").click(() => {
+                $.ajax({
+                    url: "{% url 'login' %}",
+                    method: "POST",
+                    data: {
+                        csrfmiddlewaretoken: '{{ csrf_token }}',
+                        email: $("#email").val(),
+                        password: $("#password").val()
+                    },
+                    success: (result) => {
+                        if(result['message'] == 'user logged') {
+                            localStorage.setItem("token", result['token']);
+                            window.location.replace("{% url 'list-page' %}")
+                        } else {
+                            $(".error").html(result['message']);
+                        }
+                    }
+                })
+            })
+        })
+    </script>
+    <head>
+        <style>
+            .container {
+                width: 50%;
+                height: 50%;
+                text-align: center;
+                background-color: #d4d1d1;
+                margin-left: 20%;
+                margin-top: 10%;
+            }
+
+            .emailDiv {
+                margin-top: 5%;
+            }
+
+            input[type=email], input[type=password] {
+                width: 90%;
+                height: 10%;
+                margin: 8px 0;
+                display: inline-block;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                box-sizing: border-box;
+            }
+
+            input[type=submit] {
+                width: 90%;
+                background-color: #4CAF50;
+                color: white;
+                padding: 14px 20px;
+                margin: 8px 0;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+            span {
+                color: white;
+                float: left;
+                margin-left: 5%;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <br>
+            <p class="error" style="color: red;"></p>
+            <div class="emailDiv">
+                <span>Email</span> <br>
+                <input type="email" name="email" id="email" placeholder="Enter your email">
+            </div>
+            <div class="passwordDiv">
+                <span>Password</span> <br>
+                <input type="password" name="password" id="password" placeholder="Enter your password">
+            </div>
+            <div>
+                <input type="submit" id="submit" value="Submit">
+            </div>
+        </div>
+    </body>
+</html>

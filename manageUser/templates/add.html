@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block styles %}
+    <style>
+        .back {
+            float: right;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            width: 8%;
+            height: 10%;
+        }
+
+        input[type=text], input[type=email], input[type=password], input[type=number] {
+            width: 90%;
+        }
+
+        .container {
+            margin-top: 5%;
+            margin-left: 15%;
+        }
+
+        .add {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            width: 8%;
+            height: 8%;
+            margin-top: 2%;
+            margin-left: 25%;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<a href="{% url 'list-page' %}"><input type="submit" class="back" value="Back"></a>
+
+<div class="container">
+    <p class="error"></p>
+    <form action="">
+        <div class="row">
+            <div class="col-sm-4">
+                <div>
+                    <p>Name:</p>
+                    <input type="text" name="name" id="name" required>
+                </div>
+                <div>
+                    <p>Password</p>
+                    <input type="password" name="password" id="password" required>
+                </div>
+                <div>
+                    <p>Gender</p>
+                    <select name="gender" id="gender">
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div>
+                    <p>Age</p>
+                    <input type="number" name="age" id="age" required>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div>
+                    <p>Email</p>
+                    <input type="Email" name="email" id="email" required>
+                </div>
+                <div>
+                    <p>Confirm Password</p>
+                    <input type="password" name="confirmPassword" id="confirmPassword" required>
+                </div>
+                <div>
+                    <p>Type</p>
+                    <select name="type" id="type">
+                        <option value="admin">admin</option>
+                        <option value="teacher">teacher</option>
+                        <option value="student">student</option>
+                        <option value="guest">guest</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div>
+            <input type="submit" value="Add user" class="add">
+        </div>
+    </form>
+</div>
+
+<script>
+    $(document).ready(() => {
+        $('.add').click((e) => {
+            e.preventDefault();
+            $.ajax({
+                url: "{% url 'create-users' %}",
+                method: "POST",
+                "headers": {
+                    "Authorization": "Bearer " + localStorage.getItem("token"),
+                },
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    age: $("#age").val(),
+                    gender: $("#gender").val(),
+                    email: $("#email").val(),
+                    userType: $("#type").val(),
+                    password: $("#password").val(),
+                    confirmPassword: $("#confirmPassword").val(),
+                    name: $("#name").val()
+                },
+                success: (result) => {
+                    if(result['message'] == 'Success') {
+                        window.location.replace("{% url 'list-page' %}")
+                    } else if(result['message']) {
+                        $(".error").html(result['message']);
+                    } else {
+                        $(".error").html(result);
+                    }
+                }
+            })
+        })
+    })
+</script>
+{% endblock %}

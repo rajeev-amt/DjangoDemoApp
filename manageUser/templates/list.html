@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block styles %}
+    <style>
+        table {
+            margin-top: 5%;
+            width: 70%;
+            margin-left: 15%;
+        }
+
+        input[type=submit] {
+            float: right;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            width: 8%;
+            height: 10%;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <a href="{% url 'create-users' %}"><input type="submit" value="Add user"></a>
+    <p class="message"></p>
+    <table class="userTable">
+        <thead class="userTableHead">
+            <tr>
+                <th>Sl. no.</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Age</th>
+                <th>Gender</th>
+                <th>Type</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody class="userTableBody"></tbody>
+    </table>
+
+    <script>
+        $(document).ready(() => {
+            $.ajax({
+                url: "{% url 'list-user' %}",
+                "headers": {
+                    "Authorization": "Bearer " + localStorage.getItem("token")
+                },
+                success: (result) => {
+                    var content = '';
+                    var updateUrl, deleteUrl;
+                    for(var i=0; i<result.length; i++) {
+                        var id = result[i]["id"];
+                        updateUrl = 'update/' + id;
+                        deleteUrl = 'delete/' + id;
+
+                        content += "<tr>";
+                        content += "<td>";
+                        content += i+1;
+                        content += "</td>";
+                        content += "<td>";
+                        content += result[i]['name'];
+                        content += "</td>";
+                        content += "<td>";
+                        content += result[i]['email'];
+                        content += "</td>";
+                        content += "<td>";
+                        content += result[i]['age'];
+                        content += "</td>";
+                        content += "<td>";
+                        content += result[i]['gender'];
+                        content += "</td>";
+                        content += "<td>";
+                        content += result[i]['type'];
+                        content += "</td>";
+                        content += "<td>";
+                        content += `<a href=`+updateUrl+`><i class="fa fa-edit" style="font-size:24px;"></i></a>`;
+                        content += `<i class="fa fa-trash" onclick="deleteUser('`+result[i]["id"]+`')" style="font-size:36px;"></i>`;
+                        content += "</td>";
+                        content += "</tr>";
+                    }
+
+                    $(".userTableBody").append(content);
+                }
+            })
+        })
+
+        function deleteUser(id) {
+            $.ajax({
+                url: "{% url 'delete-users' %}",
+                method: "POST",
+                "headers": {
+                    "Authorization": "Bearer " + localStorage.getItem("token"),
+                },
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    'id': id,
+                },
+                success: (result) => {
+                    $(".message").html(result['message']);
+                }
+            })
+        }
+    </script>
+{% endblock %}

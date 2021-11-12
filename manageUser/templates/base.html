@@ -1,0 +1,47 @@
+<html>
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <style>
+            header {
+                background-color: rgb(223, 219, 219);
+                height: 20%;
+                left: 0;
+            }
+
+            button {
+                float: right;
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                width: 8%;
+                height: 50%;
+            }
+        </style>
+        {% block styles %}
+        {% endblock %}
+    </head>
+    <body>
+        <header>
+            <button class="logout">Logout</button>
+        </header>
+        {% block content %}
+            
+        {% endblock %}
+
+        <script>
+            $(document).ready(() => {
+                if(localStorage.getItem("token") == null) {
+                    window.location.replace("{% url 'login' %}")
+                }
+
+                $('.logout').click(() => {
+                    localStorage.removeItem("token")
+                    window.location.replace("{% url 'login' %}")
+                })
+            })
+        </script>
+    </body>
+</html>
